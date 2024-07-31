@@ -1,10 +1,15 @@
 package com.bowmeow.payment.domain;
 
+import lombok.Getter;
+import lombok.Setter;
+
 import java.time.LocalDateTime;
 
 /**
  * 결제 request domain
  */
+@Getter
+@Setter
 public class PaymentRequest {
     /** payment access token */
     private String accessToken;

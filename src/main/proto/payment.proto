@@ -1,0 +1,19 @@
+syntax = "proto3";
+
+package com.bowmeow.payment;
+
+import "google/protobuf/empty.proto";
+
+service PaymentService {
+  rpc Payment (google.protobuf.Empty) returns (google.protobuf.Empty);
+}
+
+message PaymentRequest {
+  string accessToken = 1;
+  // 기타 필드
+}
+
+message PaymentResponse {
+  bool success = 1;
+  // 기타 필드
+}

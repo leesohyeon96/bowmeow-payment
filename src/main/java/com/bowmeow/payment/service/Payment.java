@@ -5,6 +5,7 @@ import com.bowmeow.payment.domain.PaymentResponse;
 
 public interface Payment {
 
+    // 결제
     PaymentResponse pay(PaymentRequest payment);
 
     // 결제 취소(=환불)

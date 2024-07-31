@@ -26,13 +26,18 @@ public class PaymentController {
     // todo: postgreSQL 연동하는데 -> MSA 구조에서 dockerfile 로 만들어서 ??
 
 
-    @PostMapping("/payment")
+    /**
+     * 결제
+     */
+    @PostMapping("")
     public String payment(PaymentRequestDTO paymentRequest) {
         // todo:  modelMapper > 내부 이름 수정해서 설정하도록 해야함
-        PaymentRequest pRequest = modelMapper.map(paymentRequest, PaymentRequest.class);
-        importPaymentService.pay(pRequest);
-
-        return null;
+        log.debug("payment project - payment method invoke!");
+//        PaymentRequest pRequest = modelMapper.map(paymentRequest, PaymentRequest.class);
+//        importPaymentService.payment(pRequest);
+//        importPaymentService.payment();
+        log.debug("payment success!");
+        return "OK";
     }
 
     // todo: 사람들은 어떤 라이브러리 써서 결제 하는지 찾아보기

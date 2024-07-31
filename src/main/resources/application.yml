@@ -3,3 +3,8 @@ spring:
     name: payment
 
 
+# import apiKey, apiSecret 정보
+import:
+  api:
+    key: ${IMPORT_API_KEY}
+    secret: ${IMPORT_SECRET_KEY}

@@ -8,3 +8,17 @@ import:
   api:
     key: ${IMPORT_API_KEY}
     secret: ${IMPORT_SECRET_KEY}
+
+logging:
+  level:
+    root: debug
+    com.bowmeow.payment: debug
+
+server:
+  port: 8082
+
+
+grpc:
+  server:
+    host: localhost
+    port: 9092  # gRPC 서버 포트

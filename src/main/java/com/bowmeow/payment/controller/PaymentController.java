@@ -1,14 +1,20 @@
 package com.bowmeow.payment.controller;
 
-import com.bowmeow.payment.domain.PaymentRequest;
+import com.bowmeow.payment.client.ProductClient;
 import com.bowmeow.payment.dto.PaymentRequestDTO;
+import com.bowmeow.payment.dto.ProductRequestDTO;
 import com.bowmeow.payment.service.ImportPaymentServiceImpl;
+import com.bowmeow.product.ProductServiceProto;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * Payment Controller
@@ -21,6 +27,32 @@ public class PaymentController {
 
     private final ModelMapper modelMapper;
     private final ImportPaymentServiceImpl importPaymentService;
+    private final ProductClient productClient;
+
+    /**
+     * 결제를 위한 정보 반환
+     */
+    @PostMapping("")
+    public Map<String, Object> getProductInfo(@RequestBody ProductRequestDTO request)  {
+        // 1. Product 서비스에서 상품 정보 가져오기 (예: gRPC 호출)
+        ProductServiceProto.ProductInfo productInfo = productClient.getProductInfo(request.productSno());
+        // 내일할일 TODO: product 프로젝트 만들고 거기서 .proto, client 파일 만들어서 gRPC 요청 받아서 데이터 받아오기 ~
+
+        // 2. 결제 정보 구성
+        Map<String, Object> productData = new HashMap<>();
+//        productData.put("merchant_uid", generateUniquePaymentId());
+        productData.put("productSno", productInfo.getProductSno());
+        productData.put("productPrice", productInfo.getProductPrice());
+        productData.put("productName", productInfo.getProductName());
+
+        // 3. 클라이언트에 결제 정보 반환
+        return productData;
+    }
+
+
+
+
+
     // DB는 뭐사용할까?
     // # 결제 이력이 필요하긴 하니까 RDBMS -> PostgreSQL
     // todo: postgreSQL 연동하는데 -> MSA 구조에서 dockerfile 로 만들어서 ??
@@ -29,7 +61,7 @@ public class PaymentController {
     /**
      * 결제
      */
-    @PostMapping("")
+//    @PostMapping("")
     public String payment(PaymentRequestDTO paymentRequest) {
         // todo:  modelMapper > 내부 이름 수정해서 설정하도록 해야함
         log.debug("payment project - payment method invoke!");

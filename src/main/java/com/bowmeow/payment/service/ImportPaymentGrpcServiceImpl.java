@@ -1,9 +1,11 @@
 package com.bowmeow.payment.service;
 
 import com.bowmeow.payment.PaymentServiceGrpc;
+import com.bowmeow.payment.client.ProductClient;
 import com.bowmeow.payment.domain.PaymentRequest;
 import com.bowmeow.payment.domain.PaymentResponse;
 import com.bowmeow.payment.property.ImportProperties;
+import com.bowmeow.product.ProductServiceProto;
 import com.google.protobuf.Empty;
 import io.grpc.stub.StreamObserver;
 import lombok.NoArgsConstructor;
@@ -17,11 +19,12 @@ import org.springframework.stereotype.Service;
  */
 @Service
 @NoArgsConstructor
-public class ImportPaymentServiceImpl extends PaymentServiceGrpc.PaymentServiceImplBase implements Payment {
+public class ImportPaymentGrpcServiceImpl extends PaymentServiceGrpc.PaymentServiceImplBase {
+    private ProductClient productClient;
     private ImportProperties importProperties;
 
     @Autowired
-    public ImportPaymentServiceImpl(ImportProperties importProperties) {
+    public ImportPaymentGrpcServiceImpl(ImportProperties importProperties) {
         this.importProperties = importProperties;
     }
 
@@ -70,22 +73,31 @@ public class ImportPaymentServiceImpl extends PaymentServiceGrpc.PaymentServiceI
 //        }
 //    }
 
-    private void getAccessToken() {
-        // todo: +) profiles 설정도 추가로 해줄지 고민중
-        String key = importProperties.getKey();
-        String secret = importProperties.getSecret();
+//    private void getAccessToken() {
+//        // todo: +) profiles 설정도 추가로 해줄지 고민중
+//        String key = importProperties.getKey();
+//        String secret = importProperties.getSecret();
+//
+//        // /users/getToken API를 호출
+//        // restClient 나 webClient 사용예정(http/웹/rest 클라이언트) 웹통신
+//    }
+//
+//    @Override
+//    public void payment(Empty request, StreamObserver<Empty> responseObserver) {
+//        super.payment(request, responseObserver);
+//    }
 
-        // /users/getToken API를 호출
-        // restClient 나 webClient 사용예정(http/웹/rest 클라이언트) 웹통신
+    /**
+     * Product 서비스에서 상품 정보 가져오기
+     * @param productId 가져올 상품 일련번호
+     * @return {@link com.bowmeow.product.ProductServiceProto.ProductInfo}
+     */
+    public ProductServiceProto.ProductInfo getProductInfo(Integer productId) {
+        return productClient.getProductInfo(productId);
     }
 
-    @Override
-    public void payment(Empty request, StreamObserver<Empty> responseObserver) {
-        super.payment(request, responseObserver);
-    }
-
-    @Override
-    public PaymentResponse pay(PaymentRequest payment) {
-        return null;
-    }
+//    @Override
+//    public PaymentResponse pay(PaymentRequest payment) {
+//        return null;
+//    }
 }

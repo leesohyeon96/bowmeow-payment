@@ -1,19 +1,14 @@
 package com.bowmeow.payment.controller;
 
-import com.bowmeow.payment.client.ProductClient;
+import com.bowmeow.payment.domain.ProductInfo;
 import com.bowmeow.payment.dto.PaymentRequestDTO;
 import com.bowmeow.payment.dto.ProductRequestDTO;
-import com.bowmeow.payment.service.ImportPaymentServiceImpl;
-import com.bowmeow.product.ProductServiceProto;
+import com.bowmeow.payment.service.PaymentService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
-import java.util.HashMap;
 import java.util.Map;
 
 /**
@@ -24,42 +19,43 @@ import java.util.Map;
 @RequestMapping("/payments")
 @Slf4j
 public class PaymentController {
-
     private final ModelMapper modelMapper;
-    private final ImportPaymentServiceImpl importPaymentService;
-    private final ProductClient productClient;
+    private final PaymentService paymentService;
 
     /**
-     * 결제를 위한 정보 반환
+     * 주문서 생성
+     * - [결제하기] 버튼 누른 후 주문서 생성 및 화면 이동
+     * @return wait
      */
-    @PostMapping("")
-    public Map<String, Object> getProductInfo(@RequestBody ProductRequestDTO request)  {
-        // 1. Product 서비스에서 상품 정보 가져오기 (예: gRPC 호출)
-        ProductServiceProto.ProductInfo productInfo = productClient.getProductInfo(request.productSno());
-        // 내일할일 TODO: product 프로젝트 만들고 거기서 .proto, client 파일 만들어서 gRPC 요청 받아서 데이터 받아오기 ~
+    @GetMapping("/orders")
+    public String getOrder() {
+        log.debug("GET /payments/orders invoke");
+        // 사용자 아이디 JWT 토큰 헤더에서 꺼내기
+        // 1. 주문서 생성 -> 실패해도 20분 지나면 만료상태 되도록 할 거니까 따로 보는거?
+        // 1. 주문서 만들기
+        // - 주문 id, 주문 들어온 시간 , 현재상태(결제대기, 결제완료, 결제취소(=환불), 주문 만료), 사용자 아이디(userId),
+        // 해당 사람은 무조건 1개의 주문서만 가질 수 있음 (상품 당 주문서 다 가질 수 없음!)
+        paymentService.saveOrder();
 
-        // 2. 결제 정보 구성
-        Map<String, Object> productData = new HashMap<>();
-//        productData.put("merchant_uid", generateUniquePaymentId());
-        productData.put("productSno", productInfo.getProductSno());
-        productData.put("productPrice", productInfo.getProductPrice());
-        productData.put("productName", productInfo.getProductName());
-
-        // 3. 클라이언트에 결제 정보 반환
-        return productData;
+        log.debug("saveOrder method success");
+        return "orders"; // 주문서 화면으로 이동하게 됨
     }
-
-
-
-
-
-    // DB는 뭐사용할까?
-    // # 결제 이력이 필요하긴 하니까 RDBMS -> PostgreSQL
-    // todo: postgreSQL 연동하는데 -> MSA 구조에서 dockerfile 로 만들어서 ??
-
 
     /**
      * 결제
+     * - 결제할 product 정보 조회 > product 정보의 일관성을 지키기 위함
+     * - 조회 후 결제
+     */
+    @PostMapping("")
+    public Map<String, Object> payment(@RequestBody ProductRequestDTO request)  {
+        // 1. DTO > domain mapping
+        ProductInfo productInfo = modelMapper.map(request, ProductInfo.class);
+        // 2. 결제 후 클라이언트에 결제 정보 반환
+        return paymentService.payment(productInfo);
+    }
+
+    /**
+     * 결제 - 일단 사용안함
      */
 //    @PostMapping("")
     public String payment(PaymentRequestDTO paymentRequest) {
@@ -86,23 +82,4 @@ public class PaymentController {
     //      그걸 JWT 방식으로 다른 거 request 요청할때 header 에 넣어주면 됨!
     // 그럼 어떻게 interface 형태로 만들까??
     // - 결제interface에 메소드 -> 결제하기, 결제 expire 된거 다시 호출하기??(아니면 그냥 결제하기 구현체에서 해주면 되지 않나?)
-
-
-    // 메소드를 먼저 생각해고
-    // 그게에 맞는 결제 프로세스 생각하셈 ㅇㅇ (834 API 참고) -> 아임포트 token 생성함(결제를 하면 토큰을 주는거같기도 ㅇㅇ)
-    // 1. 결제 method
-        // 결제 성공/실패 여부
-    // 2. 결제취소 (환불)
-        // 결제취소 성공/실패 여부
-    // 3. 결제 이력 조회
-
-    // request
-        // 1. 결제 method
-            // - member 일련번호
-            // - 상품 정보 (일련번호, 가격, 통화, 등등??)
-    // response
-        // 1. 결제 method
-            // - 성공 여부
-            // - 뭐가 필ㅇ하지?
-
 }

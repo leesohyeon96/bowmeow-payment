@@ -9,11 +9,8 @@ public class JWTService {
 
     private final JWTUtils jwtUtils;
 
-    public JWTService(@Value("${jwt.secretKey}")String secretKey
-                    , @Value("${jwt.expirationTime}")long expirationTime) {
-        // TODO: 이렇게 사용할 프로젝트들에서 secretKey, expirationTime을 각 Application.yml 설정에서 가져올거면 뭐하러 common을 구현해주었나??
-        // 고민하기
-        this.jwtUtils = new JWTUtils(secretKey, expirationTime);
+    public JWTService() {
+        this.jwtUtils = new JWTUtils();
     }
 
     public String getExtractUserIdFromToken(String token) {

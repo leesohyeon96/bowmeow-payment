@@ -110,3 +110,7 @@ sourceSets {
 		}
 	}
 }
+
+//bootBuildImage : 각 서비스에 Dockerfile 을 작성하지 않아도 Spring 에서 지원하기 떄문에 이미지화할 수 있음
+// 검색해서 해보기 !!
+// CI/CD 에서 run : ./gradlw bootBuildImage 이런식으로 하면 이미지로 만들 수 있는듯 하다!

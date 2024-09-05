@@ -28,14 +28,15 @@ public class PaymentController {
      * @return wait
      */
     @GetMapping("/orders")
-    public String getOrder() {
+    public String getOrder(@RequestHeader("Authorization") String authorizationHeader) {
         log.debug("GET /payments/orders invoke");
         // 사용자 아이디 JWT 토큰 헤더에서 꺼내기
         // 1. 주문서 생성 -> 실패해도 20분 지나면 만료상태 되도록 할 거니까 따로 보는거?
         // 1. 주문서 만들기
         // - 주문 id, 주문 들어온 시간 , 현재상태(결제대기, 결제완료, 결제취소(=환불), 주문 만료), 사용자 아이디(userId),
         // 해당 사람은 무조건 1개의 주문서만 가질 수 있음 (상품 당 주문서 다 가질 수 없음!)
-        paymentService.saveOrder();
+        String token = authorizationHeader.replace("Bearer ", "");
+        paymentService.saveOrder(token);
 
         log.debug("saveOrder method success");
         return "orders"; // 주문서 화면으로 이동하게 됨

@@ -48,12 +48,13 @@ public class PaymentService {
      * - userId를 가져옴
      * - 주문서 생성
      */
-    public void saveOrder() {
+    public void saveOrder(String token) {
         // 1. userId 가져옴
-//        jwtService.getUserId();
+        String  userId = jwtService.getExtractUserIdFromToken(token);
         // 2. 주문서 생성
-//        paymentJPAService.getPayments(userId);
-
-
+        // - 임시로 1개의 row 생성
+        //   주문 id, 주문 들어온 시간 , 현재상태(결제대기, 결제완료, 결제취소(=환불), 주문 만료), 사용자 아이디(userId),
+        // - 후에 주문서 작성 후 '실제 결제' 버튼 누르는 경우
+        paymentJPAService.saveOrder(userId);
     }
 }

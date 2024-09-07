@@ -2,11 +2,13 @@ package com.bowmeow.payment.controller;
 
 import com.bowmeow.payment.domain.ProductInfo;
 import com.bowmeow.payment.dto.PaymentRequestDTO;
+import com.bowmeow.payment.dto.ProductInfoDTO;
 import com.bowmeow.payment.dto.ProductRequestDTO;
 import com.bowmeow.payment.service.PaymentService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Map;
@@ -27,8 +29,8 @@ public class PaymentController {
      * - [결제하기] 버튼 누른 후 주문서 생성 및 화면 이동
      * @return wait
      */
-    @GetMapping("/orders")
-    public String getOrder(@RequestHeader("Authorization") String authorizationHeader) {
+    @PostMapping("/orders")
+    public String getOrder(@RequestHeader("Authorization") String authorizationHeader, Model model, @RequestBody ProductInfoDTO request) {
         log.debug("GET /payments/orders invoke");
         // 사용자 아이디 JWT 토큰 헤더에서 꺼내기
         // 1. 주문서 생성 -> 실패해도 20분 지나면 만료상태 되도록 할 거니까 따로 보는거?
@@ -36,10 +38,12 @@ public class PaymentController {
         // - 주문 id, 주문 들어온 시간 , 현재상태(결제대기, 결제완료, 결제취소(=환불), 주문 만료), 사용자 아이디(userId),
         // 해당 사람은 무조건 1개의 주문서만 가질 수 있음 (상품 당 주문서 다 가질 수 없음!)
         String token = authorizationHeader.replace("Bearer ", "");
-        paymentService.saveOrder(token);
+        Long orderId = paymentService.saveOrder(token);
 
         log.debug("saveOrder method success");
-        return "orders"; // 주문서 화면으로 이동하게 됨
+        model.addAttribute("orderId", orderId);
+        model.addAttribute("productInfo", request);
+        return "orders";
     }
 
     /**
@@ -53,20 +57,6 @@ public class PaymentController {
         ProductInfo productInfo = modelMapper.map(request, ProductInfo.class);
         // 2. 결제 후 클라이언트에 결제 정보 반환
         return paymentService.payment(productInfo);
-    }
-
-    /**
-     * 결제 - 일단 사용안함
-     */
-//    @PostMapping("")
-    public String payment(PaymentRequestDTO paymentRequest) {
-        // todo:  modelMapper > 내부 이름 수정해서 설정하도록 해야함
-        log.debug("payment project - payment method invoke!");
-//        PaymentRequest pRequest = modelMapper.map(paymentRequest, PaymentRequest.class);
-//        importPaymentService.payment(pRequest);
-//        importPaymentService.payment();
-        log.debug("payment success!");
-        return "OK";
     }
 
     // todo: 사람들은 어떤 라이브러리 써서 결제 하는지 찾아보기

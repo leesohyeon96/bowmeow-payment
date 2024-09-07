@@ -22,3 +22,18 @@ grpc:
   server:
     host: localhost
     port: 9092  # gRPC 서버 포트
+
+
+# database 연결 설정
+  datasource:
+    url: jdbc:postgresql://bow-meow-payment-db:5432/bow-meow-payment_db
+    username: bow-meow-payment-user # 수정예정
+    password: bow-meow-payment-pass-word # 수정예정
+    driver-class-name: org.postgresql.Driver
+    jpa:
+      hibernate:
+        ddl-auto: update # 스키마 자동 생성 전략 (create, update, validate, none 중 선택)
+      show-sql: true  # 쿼리 로그를 콘솔에 출력
+      properties:
+        hibernate:
+          dialect: org.hibernate.dialect.PostgreSQLDialect  # PostgreSQL 사용 시 적절한 방언 설정

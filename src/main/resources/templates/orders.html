@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>주문서</title>
+    <link rel="stylesheet" href="/styles.css"> <!-- 스타일 시트 링크 -->
+</head>
+<body>
+<header>
+    <h1>주문서</h1>
+</header>
+
+<main>
+    <div class="order-details">
+        <h2>주문 상세 정보</h2>
+        <form action="#" method="post">
+            <input type="hidden" name="orderId" th:value="${orderId}"/>
+            <p><strong>제품 명</strong> <span th:text="${productInfo.productNm}">제품명</span></p>
+            <p><strong>제품 수량</strong> <span th:text="${productInfo.productCnt}">제품 수량</span></p>
+            <p><strong>가격</strong> <span th:text="${productInfo.productPrice}">가격</span></p>
+            <button type="submit">결제하기</button>
+        </form>
+    </div>
+</main>
+
+<footer>
+    <p>&copy; 2024 Bowmeow. All rights reserved.</p>
+</footer>
+</body>
+</html>

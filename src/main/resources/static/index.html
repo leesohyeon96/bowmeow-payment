@@ -21,12 +21,13 @@
         // pamynet에서 product로 정보 요청한다음 성공하면 그 정보 가지고 결제창 띄우기
         function getProductInfo() {
             // apigateway 쪽으로 요청
-            fetch('/api/product', {
+            fetch('/payments/products', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'
                 },
                 body: JSON.stringify({
+                    // 반환하는 데이터 Controller 단과 일치 필요
                     orderId: 'order_no_0001',
                     amount: 1004,
                     buyerEmail: 'test@portone.io',
@@ -83,6 +84,7 @@
                 },
                 function (rsp) {
                     // callback 로직
+                    // TODO: 여기서 실제 결제하기 url 호출! (or 이게 맞는지 알아보기)
                     //* ...중략... *//
                 },
             );

@@ -47,11 +47,10 @@ public class PaymentController {
     }
 
     /**
-     * 결제
-     * - 결제할 product 정보 조회 > product 정보의 일관성을 지키기 위함
-     * - 조회 후 결제
+     * 결제할 product 정보 조회
+     * - product 정보의 일관성을 지키기 위함
      */
-    @PostMapping("")
+    @PostMapping("products")
     public Map<String, Object> payment(@RequestBody ProductRequestDTO request)  {
         // 1. DTO > domain mapping
         ProductInfo productInfo = modelMapper.map(request, ProductInfo.class);

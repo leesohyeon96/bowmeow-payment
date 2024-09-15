@@ -10,11 +10,8 @@
 <body>
     <button onclick="getProductInfo()">결제경험해보기</button>
 
-
     <script src="https://cdn.iamport.kr/v1/iamport.js"></script>
-
     <script>
-
         // TODO:
         // 아래 코드가 클라이언트 쪽 javascript 나 node.js 에 있어야함!
         // gateway 쪽으로 요청오면 그게 라우팅 되서 > pamyent 로 온다!
@@ -27,41 +24,39 @@
                     'Content-Type': 'application/json'
                 },
                 body: JSON.stringify({
-                    // 반환하는 데이터 Controller 단과 일치 필요
-                    orderId: 'order_no_0001',
-                    amount: 1004,
-                    buyerEmail: 'test@portone.io',
-                    buyerName: '구매자이름',
-                    buyerTel: '010-1234-5678'
+                    productSno: 1 // getProductInfo(여따가 productSno) 담도록
                 })
-            })
-                .then(response => response.json())
-                .then(data => {
+            }).then(response => response.json())
+              .then(data => {
                     // 백엔드에서 gRPC 호출이 성공했다면, 결제 창을 띄움
                     if (data.success) {
-                        requestPay(data.paymentId);
+                        requestPay(data);
                     } else {
                         console.error('결제 요청 실패:', data.message);
+                        alert("알 수 없는 이유로 결제가 실패하였습니다");
                     }
                 })
                 .catch(error => {
                     console.error('결제 요청 중 오류 발생:', error);
+                    alert("알 수 없는 이유로 결제가 실패하였습니다");
                 });
         }
 
 
-        function requestPay() {
+        function requestPay(data) {
+            console.log(data);
+            // 여기서 data 정리해서 밑에다가 데이터 넣어주기!!
 
             IMP.request_pay(
                 {
-                    pg: "html5_inicis.INIpayTest",
+                    pg: "html5_inicis.INIpayTest", // 뭘 넣어야하징?
                     pay_method: "card",
-                    merchant_uid: "order_no_0001", //상점에서 생성한 고유 주문번호
-                    name: "주문명:결제테스트",
-                    amount: 1004,
-                    buyer_email: "test@portone.io",
+                    merchant_uid: data.getMerchant_uid, //상점에서 생성한 고유 주문번호
+                    name: data.getProductName,
+                    amount: data.getProductPrice,
+                    buyer_email: "test@portone.io", // 사용자 관련된 걸 어디서 가져올까? 백엔드에서??
                     buyer_name: "구매자이름",
-                    buyer_tel: "010-1234-5678", //필수 파라미터 입니다.
+                    buyer_tel: "010-6222-0160", //필수 파라미터 입니다.
                     buyer_addr: "서울특별시 강남구 삼성동",
                     buyer_postcode: "123-456",
                     // m_redirect_url: "{모바일에서 결제 완료 후 리디렉션 될 URL}",
@@ -86,6 +81,7 @@
                     // callback 로직
                     // TODO: 여기서 실제 결제하기 url 호출! (or 이게 맞는지 알아보기)
                     //* ...중략... *//
+                    console.log("뭐다냐?");
                 },
             );
         }

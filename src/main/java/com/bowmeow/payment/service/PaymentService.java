@@ -13,6 +13,7 @@ import org.springframework.stereotype.Service;
 import java.awt.*;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.UUID;
 import java.util.logging.Level;
 
 @Service
@@ -35,12 +36,20 @@ public class PaymentService {
 
         // 2. 결제 정보 구성
         Map<String, Object> productData = new HashMap<>();
-//        productData.put("merchant_uid", generateUniquePaymentId()); // TODO : merchant_uid 할지말지
+        productData.put("merchant_uid", generateUniquePaymentId());
         productData.put("productSno", product.getProductSno());
         productData.put("productPrice", product.getProductPrice());
         productData.put("productName", product.getProductName());
 
         return productData;
+    }
+
+    /**
+     * UUID 생성
+     * @return 생성된 UUID
+     */
+    private String generateUniquePaymentId() {
+        return "product_" + UUID.randomUUID();
     }
 
     /**

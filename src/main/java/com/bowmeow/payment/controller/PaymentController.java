@@ -1,9 +1,8 @@
 package com.bowmeow.payment.controller;
 
-import com.bowmeow.payment.domain.ProductInfo;
-import com.bowmeow.payment.dto.PaymentRequestDTO;
+import com.bowmeow.payment.domain.PaymentUpdateRequest;
+import com.bowmeow.payment.dto.PaymentUpdateRequestDTO;
 import com.bowmeow.payment.dto.ProductInfoDTO;
-import com.bowmeow.payment.dto.ProductRequestDTO;
 import com.bowmeow.payment.service.PaymentService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -11,6 +10,7 @@ import org.modelmapper.ModelMapper;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.HashMap;
 import java.util.Map;
 
 /**
@@ -50,12 +50,30 @@ public class PaymentController {
      * 결제할 product 정보 조회
      * - product 정보의 일관성을 지키기 위함
      */
-    @PostMapping("products")
-    public Map<String, Object> payment(@RequestBody ProductRequestDTO request)  {
-        // 1. DTO > domain mapping
-        ProductInfo productInfo = modelMapper.map(request, ProductInfo.class);
-        // 2. 결제 후 클라이언트에 결제 정보 반환
-        return paymentService.payment(productInfo);
+    @PostMapping("/products/{productId}")
+    public Map<String, Object> payment(@PathVariable Integer productId)  {
+        // 클라이언트에 결제 정보 반환
+        return paymentService.payment(productId);
+    }
+
+
+    /**
+     * 실제 결제 여부 확인 및 결제 정보 업데이트
+     * @param request {@link PaymentUpdateRequestDTO}
+     * @return 확인
+     */
+    @PutMapping("/{orderId}")
+    public Map<String, Object> updatePaymentInfo(@PathVariable Integer paymentId,
+                                                 @RequestBody PaymentUpdateRequestDTO request) {
+        PaymentUpdateRequest paymentUpdate = modelMapper.map(request, PaymentUpdateRequest.class);
+        paymentUpdate.setPaymentId(paymentId);
+
+        Integer result = paymentService.paymentVerificationAndUpdate(paymentUpdate);
+        boolean isSuccess = result == 1;
+
+        Map<String, Object> response = new HashMap<>();
+        response.put("success", isSuccess);
+        return response;
     }
 
     // todo: 사람들은 어떤 라이브러리 써서 결제 하는지 찾아보기

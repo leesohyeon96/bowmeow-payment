@@ -1,20 +1,18 @@
 package com.bowmeow.payment.service;
 
 import com.bowmeow.payment.client.ProductClient;
-import com.bowmeow.payment.domain.ProductInfo;
 //import com.bowmeow.product.ProductServiceProto;
+import com.bowmeow.payment.domain.PaymentUpdateRequest;
 import com.bowmeow.payment.property.ImportProperties;
 import com.bowmeow.product.ProductServiceProto;
-import io.grpc.StatusRuntimeException;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
-import java.awt.*;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
-import java.util.logging.Level;
 
 @Service
 @Slf4j
@@ -30,9 +28,9 @@ public class PaymentService {
      * 결제할 product 정보 조회
      * - product 정보의 일관성을 지키기 위함
      */
-    public Map<String, Object> payment(ProductInfo productInfo) {
+    public Map<String, Object> payment(Integer productId) {
          // 1. productId 이용하여 Product 서비스에서 상품 정보 가져오기 (예: gRPC 호출)
-        ProductServiceProto.ProductInfo product = importPaymentGrpcService.getProductInfo(productInfo.getProductId());
+        ProductServiceProto.ProductInfo product = importPaymentGrpcService.getProductInfo(productId);
 
         // 2. 결제 정보 구성
         Map<String, Object> productData = new HashMap<>();
@@ -107,5 +105,20 @@ public class PaymentService {
 
         // /users/getToken API를 호출
         // restClient 나 webClient 사용예정(http/웹/rest 클라이언트) 웹통신
+    }
+
+    /**
+     * 결제 정보 저장
+     * @param paymentUpdate {@link PaymentUpdateRequest}
+     * @return 확인
+     */
+    @Transactional(rollbackOn = Exception.class)
+    public Integer paymentVerificationAndUpdate(PaymentUpdateRequest paymentUpdate) {
+//        Payment
+
+        paymentJPAService.savePayment(paymentUpdate);
+        // 1. 결제 정보 저장
+        return null;
+
     }
 }

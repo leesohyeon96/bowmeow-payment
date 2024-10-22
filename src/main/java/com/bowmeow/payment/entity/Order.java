@@ -25,6 +25,9 @@ public class Order {
     @Column(name = "ORDER_STATUS", nullable = false) // 주문 상태
     private String orderStatus;
 
+    @Column(name = "PRODUCT_PURCHASE_COUNT", nullable = false) // 주문 상품 갯수
+    private Integer productPurchaseCount;
+
     // 엔티티 생성 시 orderInsertTime를 현재 UTC 시간으로 고정
     @PrePersist
     public void prePersist() {

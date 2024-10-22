@@ -1,6 +1,5 @@
 package com.bowmeow.payment.service;
 
-import com.bowmeow.payment.Payment;
 import com.bowmeow.payment.domain.PaymentUpdateRequest;
 import com.bowmeow.payment.entity.Order;
 import com.bowmeow.payment.repository.PaymentRepository;
@@ -12,14 +11,20 @@ import org.springframework.stereotype.Service;
 public class PaymentJPAService {
 
     private PaymentRepository paymentRepository;
-    // Repository 만들기
-//    private PaymentRe
 
     public Long saveOrder(String userId) {
         Order order = new Order();
         order.setUserId(userId);
         Order saveOrder = paymentRepository.saveOrder(order);
         return saveOrder.getOrderId();
+    }
+
+    /**
+     * 주문서 생성
+     * @return {@link Order}
+     */
+    public Order saveOrder(Order order) {
+        return paymentRepository.saveOrder(order);
     }
 
     /**

@@ -1,9 +1,12 @@
 package com.bowmeow.payment.controller;
 
+import com.bowmeow.payment.domain.PaymentRequest;
 import com.bowmeow.payment.domain.PaymentUpdateRequest;
 import com.bowmeow.payment.dto.PaymentUpdateRequestDTO;
 import com.bowmeow.payment.dto.ProductInfoDTO;
 import com.bowmeow.payment.service.PaymentService;
+import com.siot.IamportRestClient.response.IamportResponse;
+import com.siot.IamportRestClient.response.Payment;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
@@ -23,6 +26,8 @@ import java.util.Map;
 public class PaymentController {
     private final ModelMapper modelMapper;
     private final PaymentService paymentService;
+
+    // todo: 트랜젝션 처리 필요
 
     /**
      * 주문서 생성
@@ -54,6 +59,24 @@ public class PaymentController {
     public Map<String, Object> payment(@PathVariable Integer productId)  {
         // 클라이언트에 결제 정보 반환
         return paymentService.payment(productId);
+    }
+
+    /**
+     * 결제
+     * @return 결제 결과
+     */
+    @PostMapping("/")
+    public IamportResponse<Payment> payment(@RequestBody PaymentRequest request) {
+        // postman 으로 테스트 시 iamport 에서 제공하는 JSON 테스트 데이터 사용하면 됨
+        // ex) {
+        //  "merchant_uid": "unique_merchant_id",
+        //  "amount": 100.0,
+        //  "card_number": "1234-5678-9012-3456",
+        //  "expiry": "2024-12",
+        //  "birth": "900101",
+        //  "pwd_2digit": "12"
+        //}
+        return paymentService.payment(request);
     }
 
 

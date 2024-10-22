@@ -1,8 +1,11 @@
 package com.bowmeow.payment.domain;
 
+import jakarta.validation.constraints.NotBlank;
 import lombok.Getter;
 import lombok.Setter;
+import org.springframework.lang.NonNull;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
 /**
@@ -25,6 +28,26 @@ public class PaymentRequest {
     private String apiKey; // paypal : clientKey
     /** secret for access token */
     private String apiSecret; // paypal : clientSecret
+
+    // iamport 에 필요한 request
+    /** 상점 주문 번호(고유 주문 번호) */
+    @NotBlank(message = "상점 주문 번호 없음")
+    private String merchant_uid;
+    /** 결제 금액 */
+    @NonNull
+    private BigDecimal amount;
+    /** 카드 번호 */
+    @NotBlank(message = "카드 번호 없음")
+    private String card_number;
+    /** 카드 만료일 */
+    @NotBlank(message = "카드 만료일 없음")
+    private String expiry;
+    /** 생년월일 */
+    @NonNull
+    private int birth;
+    /** 카드 비밀번호 앞 두 자리 */
+    @NonNull
+    private int pwd_2digit;
 
 
     // 결제 토근 request domain
